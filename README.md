@@ -13,6 +13,8 @@ built-in sensors like Accelerometer & Gyroscope.
 https://sensei-remote.glitch.me/ - Note : Rn, Due to Platform restrictions, this is pretty laggy on the Web. 
 ![Demo](./public/Demo/demo.gif)
 
+As you can see, I can point my Phone towards the screen and the Red Dot moves there as if the phone was a laser pointer. This is done with nothing but Sensors like Accelerometer, Gyroscope on the Device.  
+
 ## How does this work ?
 
 The Client utilizes the [Generic Sensor API](https://developer.mozilla.org/en-US/docs/Web/API/Sensor_APIs) to access sensor data and then translates it into a position of
