@@ -1,0 +1,115 @@
+<html>
+	<head>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
+		<script>
+			window.onload = function () {
+				const id = document.querySelector(".id");
+				const url = document.querySelector(".url");
+				const controllerID = window.location.pathname.replace(
+					"/controller/",
+					"",
+				);
+				id.innerText = id.innerText + " " + controllerID;
+				url.setAttribute(
+					"href",
+					window.location.origin + "/canvas/" + controllerID,
+				);
+				url.innerText =
+					window.location.origin + "/canvas/" + controllerID;
+			};
+		</script>
+	</head>
+	<style>
+		body {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-direction: column;
+			height: 100vh;
+			text-align: center;
+		}
+
+		.bottomText {
+			position: absolute;
+			bottom: 0;
+			width: 100vw;
+			font-size: xx-large;
+		}
+	</style>
+	<body>
+		<h1 class="text">Tap to re-center.</h1>
+		<div class="bottomText">
+			<p class="id">Controller ID :</p>
+			<p>
+				Canvas URL (Open this on your Laptop/Desktop) ::
+				<a target="_blank" rel="noreferer" class="url"></a>
+			</p>
+		</div>
+		<script>
+			let sensor;
+			try {
+				sensor = new AbsoluteOrientationSensor({ frequency: 30 });
+				sensor.addEventListener("reading", (e) => handleSensor(e));
+				sensor.start();
+			} catch (error) {
+				alert(
+					"The Generic Sensor API is only available in Google Chrome.",
+				);
+			}
+
+			let initPos;
+			let calibrate = true;
+
+			document.body.addEventListener("click", () => {
+				calibrate = true;
+			});
+			const controllerID = window.location.pathname.replace(
+				"/controller/",
+				"",
+			);
+			var socket = io();
+			socket.on("connect", function () {
+				socket.emit("controller", { controllerID: controllerID });
+			});
+
+			function handleSensor(e) {
+				let q = e.target.quaternion;
+				let angles = toEuler(q);
+
+				if (calibrate) {
+					initPos = angles;
+					calibrate = false;
+				}
+
+				let dist = angles.map((angle, i) =>
+					calcDist(angle, initPos[i]),
+				);
+				socket.emit("update", {
+					coords: dist,
+					controllerID: controllerID,
+				});
+			}
+
+			function toEuler(q) {
+				let sinr_cosp = 2 * (q[3] * q[0] + q[1] * q[2]);
+				let cosr_cosp = 1 - 2 * (q[0] * q[0] + q[1] * q[1]);
+				let roll = Math.atan2(sinr_cosp, cosr_cosp);
+
+				let siny_cosp = 2 * (q[3] * q[2] + q[0] * q[1]);
+				let cosy_cosp = 1 - 2 * (q[1] * q[1] + q[2] * q[2]);
+				let yaw = Math.atan2(siny_cosp, cosy_cosp);
+				return [yaw, roll];
+			}
+
+			function calcDist(angle, initAngle) {
+				angle = (angle - initAngle) * (180 / Math.PI);
+				angle = angle < 0 ? angle + 360 : angle;
+				angle = angle > 180 ? angle - 360 : angle;
+				let dist = Math.round(
+					-1000 * Math.tan(angle * (Math.PI / 180)),
+				);
+				return dist;
+			}
+		</script>
+	</body>
+</html>

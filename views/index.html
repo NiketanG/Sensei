@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Sensei</title>
+		<style>
+			@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap");
+			body {
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				height: 100vh;
+				text-align: center;
+				padding: 25px 25px;
+				font-family: "Montserrat", sans-serif;
+			}
+		</style>
+		<script>
+			function joinCanvas() {
+				let canvasID = document.querySelector("#canvasID").value;
+				if (canvasID.length > 0) {
+					window.location.href =
+						window.location.origin + "/controller/" + canvasID;
+				}
+			}
+			window.onload = function () {
+				let canvasIDinput = document.querySelector("#canvasID");
+
+				// Execute a function when the user releases a key on the keyboard
+				canvasIDinput.addEventListener("keyup", function (event) {
+					// Number 13 is the "Enter" key on the keyboard
+					if (event.keyCode === 13) {
+						// Cancel the default action, if needed
+						event.preventDefault();
+						joinCanvas();
+					}
+				});
+			};
+		</script>
+	</head>
+	<body>
+		<h1>Sensei</h1>
+		<div class="buttons">
+			<a href="/new">
+				<button>Create new Canvas</button>
+			</a>
+
+			<p>
+				OR <br />
+				Open Controller
+			</p>
+			<input type="text" id="canvasID" placeholder="Canvas ID" />
+			<button onclick="joinCanvas()">Join</button>
+		</div>
+		<h2>Demo :</h2>
+		<h2>What is this ?</h2>
+		<p>
+			A pointer/laser like remote using nothing but a Smartphone and
+			built-in sensors like Accelerometer & Gyroscope.
+		</p>
+
+		<h2>How does this work ?</h2>
+		<p>
+			The Client utilizes the
+			<a
+				href="https://developer.mozilla.org/en-US/docs/Web/API/Sensor_APIs"
+				target="_blank"
+				rel="noreferer"
+				>Generic Sensor API</a
+			>
+			to access sensor data and then translates it into a position of
+			pointer on your laptop/desktop screen. The data is transmitted in
+			realtime using WebSockets through Socket.io and is drawn on the
+			canvas.
+		</p>
+
+		<h3>NOTE :</h3>
+		<p>
+			As of writing this, the Generic Sensor API is only available in
+			Android Devices or any other browser other than Google Chrome. So on
+			the client, you must have Google Chrome.
+		</p>
+	</body>
+</html>
