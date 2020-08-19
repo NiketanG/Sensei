@@ -10,7 +10,7 @@ A pointer/laser like remote using nothing but a Smartphone and
 built-in sensors like Accelerometer & Gyroscope.
 
 ### Demo :
-
+https://sensei-remote.glitch.me/ - Note : Rn, Due to Platform restrictions, this is pretty laggy on the Web. 
 ![Demo](./public/Demo/demo.gif)
 
 ## How does this work ?
