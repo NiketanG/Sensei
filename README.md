@@ -29,9 +29,8 @@ As of writing this, the Generic Sensor API is only supported in Google Chrome v7
 
 ### Development
 
-The Server consists of an Express-backed Node Server, customized to optionally server https traffic. (Configure Env Variable & generate Self Signed Certificate.)
+The Server consists of an Express-backed Node Server, customized to optionally serve using https that is required for the Generic Sensor API. (Configure Env Variable & generate Self Signed Certificate.)
 
-Note: The Generic Sensor Api ONLY works on https. So make sure to enable that in the Express server before running the server.
 Make sure to have a .env file configured with PORT (number) and HTTPS (Boolean).
 
 Install Dependencies :
