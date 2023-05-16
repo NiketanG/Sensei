@@ -1,5 +1,9 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
 		<script type="module" src="../polyfills/motion-sensors.js"></script>
 
@@ -38,9 +42,17 @@
 			width: 100vw;
 			font-size: xx-large;
 		}
+		@media only screen and (max-width: 600px) {
+			.bottomText {
+				font-size: large;
+			}
+		}
 	</style>
 	<body>
-		<h1 class="text">Tap to re-center.</h1>
+		<button id="permissionRequest">Request Permission</button>
+		<div id="parent">
+			<h1 class="text">Tap to re-center.</h1>
+		</div>
 		<div class="bottomText">
 			<p class="id">Controller ID :</p>
 			<p>
@@ -48,16 +60,21 @@
 				<a target="_blank" rel="noreferer" class="url"></a>
 			</p>
 		</div>
+
 		<script type="module">
 			import {
 				AbsoluteOrientationSensor,
 				RelativeOrientationSensor,
 			} from "../polyfills/motion-sensors.js";
 
+			const parent = document.getElementById("parent");
+
 			if (navigator.permissions) {
 				// https://w3c.github.io/orientation-sensor/#model
 				Promise.all([
 					navigator.permissions.query({ name: "accelerometer" }),
+					navigator.permissions.query({ name: "magnetometer" }),
+					navigator.permissions.query({ name: "gyroscope" }),
 				])
 					.then((results) => {
 						if (
@@ -71,15 +88,55 @@
 						}
 					})
 					.catch((err) => {
-						// console.log(
-						// 	"Integration with Permissions API is not enabled, still try to start app."
-						// );
-						initSensor();
+						parent.style.display = "none";
+						permissionRequest.style.display = "block";
 					});
 			} else {
+				parent.style.display = "none";
 				// console.log("No Permissions API, still try to start app.");
-				initSensor();
+				permissionRequest.style.display = "block";
 			}
+
+			const permissionRequest =
+				document.getElementById("permissionRequest");
+
+			permissionRequest.style.display = "none";
+			function requestPermissionSafari() {
+				if (location.protocol != "https:") {
+					location.href =
+						"https:" +
+						window.location.href.substring(
+							window.location.protocol.length
+						);
+				}
+
+				if (
+					typeof DeviceMotionEvent !== "undefined" &&
+					typeof DeviceMotionEvent.requestPermission === "function"
+				) {
+					// Show button to trigger permission request.
+					// (optional) Do something before API request prompt.
+					DeviceMotionEvent.requestPermission()
+						.then((response) => {
+							// (optional) Do something after API prompt dismissed.
+							if (response == "granted") {
+								window.addEventListener("devicemotion", (e) => {
+									parent.style.display = "block";
+									permissionRequest.style.display = "none";
+									initSensor();
+								});
+							}
+						})
+						.catch(console.error);
+				} else {
+					alert("DeviceMotionEvent is not defined");
+				}
+			}
+
+			permissionRequest.addEventListener(
+				"click",
+				requestPermissionSafari
+			);
 
 			function initSensor() {
 				let sensor;
