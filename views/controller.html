@@ -1,18 +1,18 @@
 <html>
 	<head>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
 		<script>
 			window.onload = function () {
 				const id = document.querySelector(".id");
 				const url = document.querySelector(".url");
 				const controllerID = window.location.pathname.replace(
 					"/controller/",
-					"",
+					""
 				);
 				id.innerText = id.innerText + " " + controllerID;
 				url.setAttribute(
 					"href",
-					window.location.origin + "/canvas/" + controllerID,
+					window.location.origin + "/canvas/" + controllerID
 				);
 				url.innerText =
 					window.location.origin + "/canvas/" + controllerID;
@@ -53,7 +53,7 @@
 				sensor.start();
 			} catch (error) {
 				alert(
-					"The Generic Sensor API is only available in Google Chrome.",
+					"The Generic Sensor API is only available in Google Chrome."
 				);
 			}
 
@@ -65,7 +65,7 @@
 			});
 			const controllerID = window.location.pathname.replace(
 				"/controller/",
-				"",
+				""
 			);
 			var socket = io();
 			socket.on("connect", function () {
@@ -82,7 +82,7 @@
 				}
 
 				let dist = angles.map((angle, i) =>
-					calcDist(angle, initPos[i]),
+					calcDist(angle, initPos[i])
 				);
 				socket.emit("update", {
 					coords: dist,
@@ -106,7 +106,7 @@
 				angle = angle < 0 ? angle + 360 : angle;
 				angle = angle > 180 ? angle - 360 : angle;
 				let dist = Math.round(
-					-1000 * Math.tan(angle * (Math.PI / 180)),
+					-1000 * Math.tan(angle * (Math.PI / 180))
 				);
 				return dist;
 			}

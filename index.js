@@ -13,46 +13,38 @@ if (enableHttps) {
 	const cert = fs.readFileSync("./cert.pem");
 	server = https.createServer({ key: key, cert: cert }, app);
 } else {
-	server = http.createServer(app)
+	server = http.createServer(app);
 }
 
-import {Server} from "socket.io";
+import { Server } from "socket.io";
 const io = new Server(server);
 
 import dotenv from "dotenv";
-import routes from "./routes/routes.js"
+import routes from "./routes/routes.js";
 import path from "path";
 
 const dirname = path.resolve();
-
 
 dotenv.config();
 app.use(express.static(path.join(dirname, "public")));
 
 app.use("/", routes);
 
-let controllers = {};
-
-// setInterval(() => io.emit("update", Object.values(controllers)), 10);
-
 io.on("connection", (socket) => {
-	socket.on("controller", (data) => {
-		if (data && data.controllerID) {
-			socket.join(data.controllerID, () => {
-				socket.on("update", (data) => {
-					if (data && data.coords && data.controllerID) {
-						// controllers[socket.id] = data.coords;
-						socket
-							.to(data.controllerID)
-							.emit("update", data.coords);
-					}
-				});
-			});
+	socket.on("controller", async (data) => {
+		if (data?.controllerID) {
+			await socket.join(data.controllerID);
+		}
+	});
+
+	socket.on("update", (data, room) => {
+		if (data?.coords && data.controllerID) {
+			socket.to(data.controllerID).emit("update", data.coords);
 		}
 	});
 
 	socket.on("canvas", (data) => {
-		if (data && data.canvasID) {
+		if (data?.canvasID) {
 			socket.join(data.canvasID, () => {});
 		}
 	});
@@ -65,6 +57,6 @@ server.listen(PORT, () => {
 	console.log(
 		`Server up and running on ${
 			enableHttps ? `https` : `http`
-		}://localhost:${PORT}`,
+		}://localhost:${PORT}`
 	);
 });
