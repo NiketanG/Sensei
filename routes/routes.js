@@ -1,6 +1,6 @@
-var express = require("express");
+import express from "express";
 var router = express.Router();
-const { nanoid } = require("nanoid");
+import { nanoid } from "nanoid";
 
 router.get("/", (req, res) => {
 	res.sendFile("/views/index.html", { root: "./" });
@@ -18,4 +18,4 @@ router.get("/controller/:id", (req, res) => {
 	res.sendFile("/views/controller.html", { root: "./" });
 });
 
-module.exports = router;
+export default router;

@@ -1,24 +1,33 @@
-const express = require("express");
+import express from "express";
+
 const app = express();
-const fs = require("fs");
+import fs from "fs";
+
+import https from "https";
+import http from "http";
 
 const enableHttps = process.env.HTTPS;
 let server;
 if (enableHttps) {
 	const key = fs.readFileSync("./key.pem");
 	const cert = fs.readFileSync("./cert.pem");
-	server = require("https").createServer({ key: key, cert: cert }, app);
+	server = https.createServer({ key: key, cert: cert }, app);
 } else {
-	server = require("http").createServer(app);
+	server = http.createServer(app)
 }
 
-const io = require("socket.io")(server);
-const dotenv = require("dotenv");
-const routes = require("./routes/routes");
-const path = require("path");
+import {Server} from "socket.io";
+const io = new Server(server);
+
+import dotenv from "dotenv";
+import routes from "./routes/routes.js"
+import path from "path";
+
+const dirname = path.resolve();
+
 
 dotenv.config();
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(dirname, "public")));
 
 app.use("/", routes);
 
@@ -49,11 +58,13 @@ io.on("connection", (socket) => {
 	});
 });
 
-server.listen(process.env.PORT, () => {
+const PORT = process.env.PORT || 3000;
+
+server.listen(PORT, () => {
 	console.clear();
 	console.log(
 		`Server up and running on ${
 			enableHttps ? `https` : `http`
-		}://localhost:${process.env.PORT}`,
+		}://localhost:${PORT}`,
 	);
 });
