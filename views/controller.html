@@ -1,8 +1,11 @@
 <html>
 	<head>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+		<script type="module" src="../polyfills/motion-sensors.js"></script>
+
 		<script>
 			window.onload = function () {
+				console.log("On load");
 				const id = document.querySelector(".id");
 				const url = document.querySelector(".url");
 				const controllerID = window.location.pathname.replace(
@@ -45,16 +48,51 @@
 				<a target="_blank" rel="noreferer" class="url"></a>
 			</p>
 		</div>
-		<script>
-			let sensor;
-			try {
-				sensor = new AbsoluteOrientationSensor({ frequency: 30 });
-				sensor.addEventListener("reading", (e) => handleSensor(e));
-				sensor.start();
-			} catch (error) {
-				alert(
-					"The Generic Sensor API is only available in Google Chrome."
-				);
+		<script type="module">
+			import {
+				AbsoluteOrientationSensor,
+				RelativeOrientationSensor,
+			} from "../polyfills/motion-sensors.js";
+
+			if (navigator.permissions) {
+				// https://w3c.github.io/orientation-sensor/#model
+				Promise.all([
+					navigator.permissions.query({ name: "accelerometer" }),
+				])
+					.then((results) => {
+						if (
+							results.every(
+								(result) => result.state === "granted"
+							)
+						) {
+							initSensor();
+						} else {
+							alert("Permission to use sensor was denied.");
+						}
+					})
+					.catch((err) => {
+						// console.log(
+						// 	"Integration with Permissions API is not enabled, still try to start app."
+						// );
+						initSensor();
+					});
+			} else {
+				// console.log("No Permissions API, still try to start app.");
+				initSensor();
+			}
+
+			function initSensor() {
+				let sensor;
+				try {
+					sensor = new AbsoluteOrientationSensor({
+						frequency: 30,
+					});
+					sensor.addEventListener("reading", (e) => handleSensor(e));
+					sensor.start();
+				} catch (error) {
+					alert("The Generic Sensor API is not available.");
+					console.log("[initSensor]", error);
+				}
 			}
 
 			let initPos;
