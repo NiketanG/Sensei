@@ -2,8 +2,6 @@
 
 ## Make your Smartphone a Remote Controller
 
-##### PS: Not the best & relevant name, I know. Please, suggest a better one.
-
 ## What is it ?
 
 A pointer/laser like remote using nothing but a Smartphone and
@@ -11,7 +9,7 @@ built-in sensors like Accelerometer & Gyroscope.
 
 ### Demo :
 
-https://sensei-remote.herokuapp.com/ - Note : Due to Server Location, this might have some latency issues.
+https://sensei-mns3.onrender.com/ - Note : Due to Server Location, this might have some latency issues.
 ![Demo](./public/Demo/demo.gif)
 
 As you can see, I can point my Phone towards the screen and the Red Dot moves there as if the phone was a laser pointer. This is done with nothing but Sensors like Accelerometer, Gyroscope on the Device.
